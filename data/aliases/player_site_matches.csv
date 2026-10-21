@@ -1,0 +1,36 @@
+source_sheet,source_row,source_player,site_player_id,decision_origin,review_basis
+Hashtag Stats,45,Nickeil Alexander-Walker,6205,review_csv,Yahoo's N. Alexander-Walker (ATL; PG/SG) is the distinctive abbreviated form; no competing Alexander-Walker entry.
+Hashtag Stats,113,Alexandre Sarr,10294,review_csv,Yahoo's Alex Sarr (WAS; C) is the short form of Alexandre Sarr; distinct from Olivier Sarr.
+Hashtag Stats,124,Nicolas Claxton,6219,review_csv,Yahoo's Nic Claxton (CHI; C) is the short form of Nicolas Claxton; suggested Nicolas Batum is a different player.
+Hashtag Stats,183,Yanic Konan Niederhauser,10441,review_csv,Yahoo's Y. Konan Niederhäuser (LAC; C) abbreviates Yanic and retains the distinctive surname; accent variation only.
+Hashtag Stats,251,Ron Holland II,10263,review_csv,Yahoo's Ronald Holland II (DET; SF/PF) matches Ron Holland II; Bones Hyland and Aaron Holiday are different players.
+Hashtag Stats,278,Kentavious Caldwell-Pope,5159,review_csv,Yahoo's K. Caldwell-Pope (PHI; SG/SF) abbreviates Kentavious; unique hyphenated surname.
+Hashtag Stats,330,Rob Dillingham,10281,review_csv,Exact name; source CHI versus Yahoo CHA (PG/SG) follows Sept. 27 CHI-to-CHA trade; CHA subsequently waived him Sept. 28.
+Hashtag Stats,345,Buddy Hield,5637,review_csv,Exact name; source CHA versus Yahoo CHI (SG/SF) follows Sept. 27 CHA-to-CHI trade.
+Hashtag Stats,356,Ryan Nembhard,10511,review_csv,"Exact name; source CHA versus Yahoo DEN (PG): waived by CHA Sept. 26, signed by DEN Oct. 1."
+Hashtag Stats,378,Jordan Hawkins,10098,review_csv,"Exact name; source MEM versus Yahoo CHI (SG/SF): traded to MEM Sept. 8, then signed with CHI Oct. 5/6."
+LeagueWinner Stats,35,Nickeil Alexander-Walker,6205,review_csv,Yahoo's N. Alexander-Walker (ATL; PG/SG) is the distinctive abbreviated form; no competing Alexander-Walker entry.
+LeagueWinner Stats,110,Caleb Wilson,10595,review_csv,"Exact unique name; Yahoo CHI PF versus source SF. Hashtag labels him PF, supporting an eligibility difference."
+LeagueWinner Stats,214,Oso Ighodaro,10313,review_csv,Exact unique name; Yahoo PHX C versus source PF. Hashtag also labels him C.
+LeagueWinner Stats,256,Vít Krejčí,6429,review_csv,Exact unique name; Yahoo POR SG/SF versus source PG. Hashtag also lists SG/SF.
+LeagueWinner Stats,261,Yanic Konan Niederhäuser,10441,review_csv,Yahoo's Y. Konan Niederhäuser (LAC; C) abbreviates Yanic; distinctive surname and spelling align.
+LeagueWinner Stats,270,Allen Graves,10570,review_csv,Exact unique name; Yahoo TOR PF versus source SF. Hashtag also labels him PF.
+LeagueWinner Stats,294,Kentavious Caldwell-Pope,5159,review_csv,Yahoo's K. Caldwell-Pope (PHI; SG/SF) abbreviates Kentavious; unique hyphenated surname.
+LeagueWinner Stats,319,Kris Murray,10119,review_csv,Exact unique name; Yahoo MEM SG/SF versus source PF. No competing Kris Murray in the snapshot; eligibility differs.
+LeagueWinner Stats,337,Tristan Vukcevic,10078,review_csv,Exact unique name; Yahoo WAS C versus source PF. Hashtag labels him C.
+LeagueWinner Stats,364,Kenrich Williams,6076,review_csv,Exact unique name; Yahoo OKC PF/C versus source SF. Hashtag also lists PF/C.
+LeagueWinner Stats,366,Sidy Cissoko,10051,review_csv,Exact unique name; Yahoo POR SF/PF versus source SG. Hashtag also lists SF/PF.
+LeagueWinner Stats,367,Ron Harper Jr.,6761,review_csv,Exact unique name; Yahoo BOS SF versus source SG. Adjacent wing positions; eligibility differs.
+LeagueWinner Stats,389,Julian Reese,10559,review_csv,Exact unique name; Yahoo NOP C versus source PF. Adjacent frontcourt positions; eligibility differs.
+LeagueWinner Stats,394,Caleb Martin,6275,review_csv,Exact unique name; Yahoo DAL SF/PF versus source SG. Hashtag also lists SF/PF.
+LeagueWinner Stats,396,Chaney Johnson,10527,review_csv,Exact unique name; Yahoo BKN PF versus source SF. Adjacent forward positions; eligibility differs.
+LeagueWinner Stats,402,Tolu Smith,10418,review_csv,Exact unique name; Yahoo DET C versus source PF. Adjacent frontcourt positions; eligibility differs.
+LeagueWinner Stats,403,Trayce Jackson-Davis,10080,review_csv,Exact unique name; Yahoo TOR C versus source PF. Hashtag also lists C.
+LeagueWinner Stats,410,Blake Hinson,10307,review_csv,"Exact unique name; Yahoo UTA PF/C versus source SF. Source differs on forward eligibility, not name."
+LeagueWinner Stats,442,PJ Hall,10329,review_csv,Exact unique name; Yahoo CHA C versus source PF. Adjacent frontcourt positions; eligibility differs.
+LeagueWinner Stats,458,David Jones Garcia,10372,review_csv,Exact unique name; Yahoo SAS SG versus source SF. Adjacent wing positions; eligibility differs.
+LeagueWinner Stats,483,Tarik Biberovic,10085,review_csv,Exact unique name; Yahoo DAL SF versus source PF. Adjacent forward positions; eligibility differs.
+LeagueWinner Stats,489,John Tonje,10493,review_csv,Exact unique name; Yahoo POR SG versus source SF. Adjacent wing positions; eligibility differs.
+LeagueWinner Stats,499,Felix Okpara,10608,review_csv,Exact unique name; Yahoo WAS C versus source PF. Adjacent frontcourt positions; eligibility differs.
+LeagueWinner Stats,519,Tobi Lawal,10601,review_csv,Exact unique name; Yahoo DAL PF versus source SF. Adjacent forward positions; eligibility differs.
+LeagueWinner Stats,520,Grant Nelson,10561,user_instruction,User-approved exact unique name match; Yahoo BKN PF eligibility is authoritative over source SG.
