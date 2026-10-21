@@ -2,5 +2,9 @@
 .venv/
 __pycache__/
 *.pyc
+*.egg-info/
+.DS_Store
+
+# Private Yahoo captures, reports and the signed-in browser profile
 data/reports/
 data/cache/

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en-CA"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Big Baller League · Dashboard</title><link rel="stylesheet" href="/static/app.css"></head><body>
+<header class="app-head"><div class="bar">
+<div class="brand"><span class="logo" aria-hidden="true">BBL</span><div><div class="league" id="leagueName">Big Baller League</div><div class="sub">2026–27 · Yahoo H2H · 9 categories</div></div></div>
+<nav class="tabs" aria-label="Sections"><a href="#overview">Overview</a><a href="#matchups">Matchups</a><a href="#waivers">Waiver Advisor</a><a href="#trades">Trade Lab</a></nav>
+<div class="head-right"><button id="sourceChip" class="chip-btn" title="Projection source">Blend</button><button id="healthPill" class="hpill" title="Yahoo data health">Yahoo</button><button id="settingsBtn" class="icon-btn" aria-label="Settings and data health"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
+</div></header>
+<div id="error" class="banner bad" role="alert" hidden></div>
+<main>
+<section id="view-overview" class="view" aria-label="League overview">
+<div class="card hero"><div class="eyebrow">Your team</div><h1 id="heroTeam">Loading…</h1><p id="heroNote"></p><div class="kpis" id="kpis"></div></div>
+<div class="card"><div class="card-head"><div><h2>Your season path</h2><p>Category score for each of your 18 regular-season matchups. Select a week to open it.</p></div></div><div id="path" class="path"></div>
+<div class="keyrow"><span><i class="sw" style="background:rgba(85,196,147,.4)"></i>Projected win</span><span><i class="sw" style="background:rgba(234,123,114,.4)"></i>Projected loss</span><span><i class="sw" style="outline:2px solid var(--accent)"></i>Current week</span><span>Thick border = final Yahoo result</span></div></div>
+<div class="card"><div class="card-head"><div><h2>League standings</h2><p id="standNote"></p></div></div><div class="scroll"><table id="standings" class="tbl"><thead></thead><tbody></tbody></table></div></div>
+<div class="card"><div class="card-head"><div><h2>Category strengths</h2><p id="scope"></p></div><div class="controls"><select id="period" aria-label="Comparison period"></select><span class="legend">Weakest <span class="grad"></span> Strongest</span></div></div>
+<div class="str-grid"><div class="heat-wrap"><table id="heatmap" class="heat"><thead></thead><tbody></tbody></table><p class="fine">Scores are league-relative: best team 100, worst 0, 50 when all are tied. They rank teams; they are not probabilities. Select a cell for the projected total and league range.</p></div><aside id="profile" class="profile" aria-live="polite"></aside></div></div>
+</section>
+<section id="view-matchups" class="view" aria-label="Matchup explorer" hidden>
+<div class="card"><div class="mx-top"><h2>Matchups</h2><div class="stepper"><button id="prevWeek" class="icon-btn" aria-label="Previous week">‹</button><select id="week" aria-label="Week"></select><button id="nextWeek" class="icon-btn" aria-label="Next week">›</button></div><span id="weekDates" class="fine" style="margin:0"></span></div><div id="weekGames" class="games"></div></div>
+<div class="card" id="matchupCard"></div>
+</section>
+<section id="view-waivers" class="view" aria-label="Waiver Advisor" hidden>
+<div id="waiverWarn" class="banner warn" hidden></div>
+<section class="advisor"><div class="adv-head"><div><p id="advisorHeadline" class="headline"></p><div id="advisorContext"></div></div><div class="adv-actions"><button id="yahooRefresh" class="btn">Refresh Yahoo</button><span id="yahooBrief" class="fine"></span></div></div><div id="advisorResults"></div><details class="panel advanced"><summary>Advanced settings and search diagnostics</summary><div class="controls" style="margin-top:12px"><label>Planning horizon <select id="advisorHorizon"><option value="auto" selected>Automatic</option><option value="1">1 scoring period</option><option value="2">2 scoring periods</option><option value="3">3 scoring periods</option></select></label><button id="advisorRun" class="btn">Re-run</button></div><p id="yahooStatus" class="note"></p><div id="advisorDiagnostics"></div></details><p class="fine">Read-only: nothing is sent to Yahoo. Projections are deterministic; source checks are sensitivity tests, not probabilities.</p></section>
+</section>
+<section id="view-trades" class="view" aria-label="Trade Lab" hidden>
+<section class="advisor">
+<div class="panel trade-search" aria-label="Trade search"><div class="ts-head"><div><div class="eyebrow">Trade search</div><h2 class="ts-title">Trades that help you more than the market thinks</h2><p class="ts-sub">Every viable package with the chosen teams is replayed against your schedule. All teams and types take about a minute.</p></div><div class="ts-actions"><span id="tradeDirty" class="ts-dirty" aria-live="polite"></span><button id="tradeApply" class="btn primary" type="button">Search</button></div></div>
+<details id="tradeFilters" class="trade-filters"><summary>Filters · <span id="tradeScope">all teams, all trade types</span></summary><div class="ts-grid"><div class="ts-group"><div class="ts-label">Trade partners<span class="ts-links"><button type="button" class="linkbtn" data-set="tradePartner:1">All</button><button type="button" class="linkbtn" data-set="tradePartner:0">None</button></span></div><div id="tradePartner" class="chips toggles"><span class="fine">Loading teams…</span></div></div>
+<div class="ts-group"><div class="ts-label">Trade types</div><div id="tradeTypes" class="chips toggles"><label class="mchip"><input type="checkbox" value="1-1" checked>1-for-1<span class="ts-sub-chip"></span></label><label class="mchip"><input type="checkbox" value="2-1" checked>2-for-1<span class="ts-sub-chip">you send two</span></label><label class="mchip"><input type="checkbox" value="1-2" checked>1-for-2<span class="ts-sub-chip">you get two</span></label><label class="mchip"><input type="checkbox" value="2-2" checked>2-for-2<span class="ts-sub-chip"></span></label></div></div>
+<div class="ts-group wide"><div class="ts-label">Untouchable players<span class="ts-hint">never offered or dropped</span><span class="ts-links"><button type="button" class="linkbtn" data-set="tradeProtect:0">Clear</button></span></div><div id="tradeProtect" class="chips toggles protect"><span class="fine">Loading your roster…</span></div></div></div></details>
+<div id="tradeStatus" class="ts-status" role="status" hidden><div class="ts-bar"><span></span></div><p id="tradeStatusText"></p></div></div>
+<div class="adv-head"><div><p id="tradeHeadline" class="headline"></p><div id="tradeContext"></div></div></div><div id="tradeResults" aria-busy="false"></div>
+<details class="panel advanced"><summary>Search diagnostics and assumptions</summary><div id="tradeDiagnostics"></div></details>
+<p class="fine">Read-only: no trade is proposed or sent to Yahoo. Category-win changes are deterministic projections, not acceptance or win probabilities. Market value combines Yahoo preseason ADP and FantasyPros consensus rankings; model value is a projection estimate. Neither predicts what a manager will accept.</p></section>
+</section>
+</main>
+<div id="scrim" class="scrim" hidden></div>
+<aside id="settings" class="drawer" aria-label="Settings and data health" hidden>
+<div class="dhead"><h2>Settings and data</h2><button id="settingsClose" class="icon-btn" aria-label="Close settings">✕</button></div>
+<section><div class="eyebrow">Projection source</div><div class="seg" id="sourceSeg"><button data-v="blend">Blend</button><button data-v="hashtag">Hashtag</button><button data-v="leaguewinner">LeagueWinner</button></div>
+<select id="source" hidden><option value="blend">Blended</option><option value="hashtag">Hashtag only</option><option value="leaguewinner">LeagueWinner only</option></select>
+<div class="field" id="weightBox"><label for="weight">Hashtag share of the blend: <b id="weightLabel">50%</b></label><input id="weight" type="range" min="0" max="100" value="50"></div>
+<p class="fine">Applies to standings, strengths, matchups and the Waiver Advisor.</p></section>
+<section><div class="eyebrow">Data health</div><div id="health"></div></section>
+<details><summary>How the numbers work</summary><div id="method"></div></details>
+<details><summary>Technical details</summary><div id="tech"></div></details>
+</aside>
+<div id="tip" class="tip" role="tooltip" hidden></div>
+<script src="/static/app.js"></script></body></html>

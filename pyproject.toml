@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fantasy-dashboard"
+version = "0.3.0"
+description = "Local, read-only Yahoo H2H fantasy basketball dashboard: forecast, Waiver Advisor and Trade Lab"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["openpyxl>=3.1,<4"]
+
+[project.optional-dependencies]
+browser = ["playwright>=1.55,<2"]
+dev = ["ruff>=0.15"]
+
+[project.scripts]
+fantasy-dashboard = "fantasy_dashboard.web.server:main"
+fantasy-import-audit = "fantasy_dashboard.cli:main"
+fantasy-yahoo-refresh = "fantasy_dashboard.yahoo.refresh:main"
+fantasy-market-capture = "fantasy_dashboard.yahoo.market_capture:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+fantasy_dashboard = ["web/static/*"]
+
+[tool.ruff]
+line-length = 120
+src = ["src", "tests", "scripts"]
+extend-exclude = ["data"]
+
+[tool.ruff.lint]
+# Pyflakes, syntax errors, import order, mutable defaults and modern-syntax upgrades. Line length is not enforced:
+# the codebase uses dense, deliberately long lines for tables of rules and formulas.
+select = ["F", "E9", "I", "UP", "B006"]
+ignore = ["UP017", "UP031", "UP032"]   # keep timezone.utc and %-formatting as written
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+known-first-party = ["fantasy_dashboard"]
+known-local-folder = ["support", "pinned_capture", "test_trades"]
