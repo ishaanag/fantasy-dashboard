@@ -34,7 +34,7 @@ def apply_reviewed_matches(report: dict, records: list[Projection], players: lis
     if len(current_flags) != len(report["manual_review"]):
         raise ValueError("Browser matching has multiple flags for one source row")
 
-    existing_keys = {(item["sheet"], item["row"]) for item in report["candidate_links"]}
+    existing_keys = {(item["sheet"], item["row"]): item["site_player_id"] for item in report["candidate_links"]}
     linked_targets = {(item["source"], item["site_player_id"]) for item in report["candidate_links"]}
     reviewed_links, resolved, seen_rows = [], [], set()
     for line, decision in enumerate(decisions, start=2):
@@ -43,6 +43,11 @@ def apply_reviewed_matches(report: dict, records: list[Projection], players: lis
         except (TypeError, ValueError) as exc:
             raise ValueError(f"Invalid reviewed source row at CSV line {line}") from exc
         site_id = decision["site_player_id"]
+        if key not in seen_rows and existing_keys.get(key) == site_id:
+            # Auto-matching already links this row to the same player (e.g. an older capture from before a
+            # team change); the review agrees, so there is nothing to resolve. A different player still fails.
+            seen_rows.add(key)
+            continue
         if key in seen_rows or key in existing_keys:
             raise ValueError(f"Duplicate or already linked reviewed source row: {key}")
         seen_rows.add(key)

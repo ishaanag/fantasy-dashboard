@@ -22,6 +22,13 @@ from fantasy_dashboard.yahoo.roster_capture import (
 )
 
 
+# Yahoo shows a waiver player as "W" or, once the clear date is set, "W (Oct 24)".
+WAIVER_LABEL = re.compile(r"W(?: \([A-Z][a-z]{2} \d{1,2}\))?")
+
+
+def is_waiver_label(label: str) -> bool:
+    return WAIVER_LABEL.fullmatch(label) is not None
+
 @dataclass(frozen=True)
 class BrowserPlayer:
     page: int
@@ -96,6 +103,8 @@ def load_player_capture(path: Path) -> tuple[dict, list[BrowserPlayer]]:
         seen.add(site_id)
         page_sizes[page_number] += 1
         nba_team, eligibility = parse_player_detail(detail)
+        if is_waiver_label(label):
+            label = "W"   # the clear date is kept separately as waiver evidence
         owners = [team_id for team_id, team_name in teams.items() if team_name == label]
         if label not in {"FA", "W"} and not owners:
             raise ValueError(f"Unknown availability label at player row {line}: {label}")

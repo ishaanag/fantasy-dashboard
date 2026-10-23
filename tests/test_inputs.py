@@ -13,7 +13,7 @@ from fantasy_dashboard.sources.matching import match_sources, normalize_name, se
 from fantasy_dashboard.sources.projections import Projection, import_workbook, parse_row
 from fantasy_dashboard.sources.reviewed_matches import apply_reviewed_matches
 from fantasy_dashboard.sources.settings import read_local_settings
-from fantasy_dashboard.yahoo.player_capture import BrowserPlayer, load_player_capture, match_browser_players
+from fantasy_dashboard.yahoo.player_capture import BrowserPlayer, is_waiver_label, load_player_capture, match_browser_players
 from fantasy_dashboard.yahoo.refresh import _save, lineup_date
 from fantasy_dashboard.yahoo.roster_capture import (
     BrowserRosterPlayer,
@@ -253,6 +253,10 @@ class ReportAndBrowserTests(unittest.TestCase):
         self.assertEqual(lineup_date("Starting Rosters\nTue, Oct 20", date(2026, 10, 19)), "2026-10-20")
         with self.assertRaises(ValueError):
             lineup_date("Starting Rosters\nTue, Oct 20", date(2027, 8, 1))
+
+    def test_waiver_label_with_clear_date(self):
+        self.assertTrue(all(map(is_waiver_label, ["W", "W (Oct 24)", "W (Nov 3)"])))
+        self.assertFalse(any(map(is_waiver_label, ["FA", "W (soon)", "Whole Team is Consistent"])))
 
 
 if __name__ == "__main__":

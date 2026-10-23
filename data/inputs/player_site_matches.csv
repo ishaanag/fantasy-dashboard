@@ -34,3 +34,5 @@ LeagueWinner Stats,489,John Tonje,10493,review_csv,Exact unique name; Yahoo POR 
 LeagueWinner Stats,499,Felix Okpara,10608,review_csv,Exact unique name; Yahoo WAS C versus source PF. Adjacent frontcourt positions; eligibility differs.
 LeagueWinner Stats,519,Tobi Lawal,10601,review_csv,Exact unique name; Yahoo DAL PF versus source SF. Adjacent forward positions; eligibility differs.
 LeagueWinner Stats,520,Grant Nelson,10561,user_instruction,User-approved exact unique name match; Yahoo BKN PF eligibility is authoritative over source SG.
+Hashtag Stats,274,Walter Clayton Jr.,10461,review_csv,"Exact name; source MEM versus Yahoo DAL (PG/SG): waived by MEM before the Oct. 2026 opener, now listed on DAL."
+LeagueWinner Stats,323,Walter Clayton Jr.,10461,review_csv,"Exact name; source MEM versus Yahoo DAL (PG/SG): waived by MEM before the Oct. 2026 opener, now listed on DAL."

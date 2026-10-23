@@ -21,6 +21,7 @@ from fantasy_dashboard.league import EASTERN
 from fantasy_dashboard.sources.matchups import load_matchups
 from fantasy_dashboard.sources.schedule import load_fantasy_weeks, load_schedule
 from fantasy_dashboard.yahoo import market_capture
+from fantasy_dashboard.yahoo.player_capture import is_waiver_label
 from fantasy_dashboard.yahoo.roster_capture import fnv32
 from fantasy_dashboard.yahoo.transactions import (
     ACTUAL_JS,
@@ -51,7 +52,8 @@ def _roster_snapshot(page, league_id: str) -> dict:
     page.goto(f"https://{HOST}/nba/{league_id}/startingrosters", wait_until="domcontentloaded")
     page.locator('table[id^="Tst-team-"]').first.wait_for(timeout=30_000)
     observed = page.evaluate("""() => ({
-      header: document.body.innerText.slice(0, 500),
+      // The page shows a strip of days (yesterday first); only the Selected one is the lineup date.
+      header: document.querySelector('li.Navitem.Selected')?.textContent.trim() || '',
       teams: [...document.querySelectorAll('table[id^="Tst-team-"]')].map(t => ({
         team_id: t.id.replace('Tst-team-', ''),
         name: t.parentElement?.querySelector('p a[href^="/nba/"]')?.textContent.trim() || '',
@@ -142,7 +144,7 @@ def _save(output: Path, roster: dict, players: str, pages: int, league_id: str, 
     names = [roster_name, players_name, manifest_name]
     snapshot = None
     if transactions is not None:
-        waiver_ids = [line.split("\t")[2] for line in players.splitlines() if line.split("\t")[-1] == "W"]
+        waiver_ids = [line.split("\t")[2] for line in players.splitlines() if is_waiver_label(line.split("\t")[-1])]
         snapshot = build_snapshot(transactions["raw"], captured_at_utc=manifest["captured_at_utc"], league_id=league_id,
                                   team_id=transactions["team_id"], player_fingerprint=manifest["players"]["fnv32"],
                                   roster_fingerprint=manifest["rosters"]["fnv32"], lineup_date=roster["lineup_date"],
