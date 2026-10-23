@@ -13,9 +13,9 @@ from urllib.parse import parse_qs, urlparse
 
 from fantasy_dashboard.advisor import AdvisorConfig, advise
 from fantasy_dashboard.inputs import MATCHUPS, REPORTS, ROOT, load_inputs
-from fantasy_dashboard.league import parse_utc
+from fantasy_dashboard.league import VOLUMES, parse_utc
 from fantasy_dashboard.model.forecast import forecast, resolve_actual_state
-from fantasy_dashboard.model.lineups import rank_league
+from fantasy_dashboard.model.lineups import rank_league, resolve_projection
 from fantasy_dashboard.trades import TradeConfig, trade_lab
 from fantasy_dashboard.trades import verification as trade_verification
 from fantasy_dashboard.web.presentation import present, trade_briefs
@@ -28,6 +28,24 @@ ASSETS = {'/': ('text/html; charset=utf-8', (STATIC / 'index.html').read_bytes()
           '/static/app.js': ('text/javascript; charset=utf-8', (STATIC / 'app.js').read_bytes())}
 JSON = 'application/json; charset=utf-8'
 TRADE_TYPES = ('1-1', '2-1', '1-2', '2-2')
+
+
+def with_live_remainder(value: dict, inputs: dict, weight: float = .5) -> dict:
+    """Add the projected unplayed share of each live game once, on top of Yahoo's partial box score.
+
+    Every consumer (forecast, advisor, trades) treats current_week_volumes as a fixed baseline, which is right
+    here: a player in a live game is locked, so no decision changes the rest of that game. The default 0.5
+    source blend is used for this small remainder; the pure Yahoo totals stay in actual_only_volumes."""
+    games = value.get('in_progress_games') or []
+    if not games:
+        return value
+    volumes = {team: dict(v) for team, v in value['current_week_volumes'].items()}
+    for game in games:
+        projected = resolve_projection(inputs['projections'][game['site_id']], weight)['values']
+        share = game['remaining_fraction'] * (1 if game.get('has_stats') else projected['gp'] / 82)
+        for key in VOLUMES:
+            volumes[game['team']][key] += share * projected[key]
+    return {**value, 'actual_only_volumes': value['current_week_volumes'], 'current_week_volumes': volumes}
 
 
 def load_captured_actual(inputs: dict, reports: Path):
@@ -57,6 +75,7 @@ def load_captured_actual(inputs: dict, reports: Path):
                 sources.get('matchups') != expected):
             return None, 'rejected: completed_result_source_lineage_missing'
     try:
+        value = with_live_remainder(value, inputs)
         resolve_actual_state(inputs, parse_utc(value['as_of_utc']), value)
     except (ValueError, KeyError, TypeError) as exc:
         return None, 'rejected: ' + str(exc)[:300]
@@ -84,6 +103,7 @@ def make_handler(inputs: dict, actual_state: dict | None = None, matchup_path: P
             fresh = load_inputs(root)
             evidence, status = resolve_evidence(fresh, root / REPORTS)
             actual, status['actual_state'] = load_captured_actual(fresh, root / REPORTS)
+            status['actual_live_games'] = len((actual or {}).get('in_progress_games') or [])
             inputs, transaction_evidence, yahoo_status, actual_state = fresh, evidence, status, actual
             cached_deterministic.cache_clear()
             cached_trades.cache_clear()
@@ -222,6 +242,7 @@ def main() -> None:
     evidence, yahoo_status = resolve_evidence(inputs, root / REPORTS)
     if actual_state is None:
         actual_state, yahoo_status['actual_state'] = load_captured_actual(inputs, root / REPORTS)
+        yahoo_status['actual_live_games'] = len((actual_state or {}).get('in_progress_games') or [])
     else:
         yahoo_status['actual_state'] = 'supplied_by_flag'
 

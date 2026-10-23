@@ -118,10 +118,32 @@ ACTUAL_JS = r"""async ({league, teams, dates}) => {
   return out; }"""
 
 
+def live_remaining_fraction(game: str) -> float | None:
+    """Share of regulation still to play from Yahoo's live game cell; None when the clock cannot be read."""
+    text = game.lower()
+    if re.search(r"\b\d?ot\b|overtime", text):
+        return 0.0
+    if "half" in text:
+        return 0.5
+    if m := re.search(r"\bend (?:of )?(?:q|the )?([1-4])", text):
+        return (4 - int(m[1])) / 4
+    quarter = re.search(r"\bq([1-4])\b|\b([1-4])(?:st|nd|rd|th)\b", text)
+    if not quarter:
+        return None
+    q = int(quarter[1] or quarter[2])
+    clock = re.search(r"\b(\d{1,2}):(\d{2})\b", text)
+    left_in_quarter = min(12.0, int(clock[1]) + int(clock[2]) / 60) if clock else 6.0
+    return round(max(0.0, min(1.0, ((4 - q) * 12 + left_in_quarter) / 48)), 3)
+
+
 def build_actual_state(raw: dict, *, captured_at_utc: str, team_ids: list, dates: list,
                        completed_weeks: int, pairings: dict | None = None, league_id: str | None = None) -> dict:
-    """Verify completed scores and sum only final, started-slot daily volumes."""
+    """Verify completed scores and sum started-slot daily volumes from final and live games.
+
+    A live game's partial box score is real and is summed; the game is also listed in in_progress_games
+    with the share of regulation left, so the loader can project only the unplayed part."""
     problems = list(raw.get("errors", []))
+    in_progress = []
     ids = set(map(str, team_ids))
     records = {t: [0, 0, 0] for t in team_ids}
     weekly = []
@@ -190,10 +212,8 @@ def build_actual_state(raw: dict, *, captured_at_utc: str, team_ids: list, dates
                 problems.append(f"row_unparsed:{page['team']}/{page['date']}/{site_id}")
                 continue
             final = re.match(r"^[WL], \d+-\d+", game)
-            if game and not final and not re.match(r"^\d{1,2}:\d{2} [ap]m", game) and not game.startswith("PPD"):
-                problems.append(f"game_in_progress:{page['team']}/{page['date']}/{site_id}")
-                continue
-            if not final:
+            live = bool(game) and not final and not re.match(r"^\d{1,2}:\d{2} [ap]m", game) and not game.startswith("PPD")
+            if not (final or live):
                 continue
             try:
                 (fgm, fga), (ftm, fta) = ([0, 0] if v == "-/-" else list(map(int, v.split("/"))) for v in (cells[0], cells[2]))
@@ -203,10 +223,15 @@ def build_actual_state(raw: dict, *, captured_at_utc: str, team_ids: list, dates
                 continue
             for key, value in zip(VOLUMES, [fgm, fga, ftm, fta, *counts]):
                 totals[page["team"]][key] += value
-    return {"schema_version": 1, "source": "Yahoo final matchup pages, standings, and daily team pages",
+            if live:
+                remaining = live_remaining_fraction(game)
+                in_progress.append({"team": page["team"], "date": page["date"], "site_id": site_id, "game": game,
+                                    "remaining_fraction": 0.5 if remaining is None else remaining,
+                                    "clock_parsed": remaining is not None, "has_stats": any([fga, fta, *counts])})
+    return {"schema_version": 1, "source": "Yahoo final matchup pages, standings, and daily team pages (final and live box scores)",
             "as_of_utc": captured_at_utc, "league_id": league_id, "team_ids": team_ids,
             "completed_weeks": completed_weeks, "records": records, "weekly_records": weekly,
-            "current_week_volumes": totals, "dates": dates,
+            "current_week_volumes": totals, "in_progress_games": in_progress, "dates": dates,
             "sources": {"standings": raw.get("standings_source"),
                         "matchups": [p.get("source") for p in pages],
                         "daily_team_pages": f"/nba/{league_id}/{{team}}/team?date={{date}}&stat1=S&stat2=D" if dates else None},

@@ -100,9 +100,12 @@ class Phase3FTests(unittest.TestCase):
         combined = with_actual_volumes(future, state['current_week_volumes']['1'])
         self.assertEqual(combined['categories']['pts'], 18)
         self.assertAlmostEqual(combined['categories']['fg_pct'], 7/14)
-        page['rows'][2][2] = '3rd Qtr'
-        self.assertEqual(build_actual_state({'pages': [page]}, captured_at_utc='2026-10-22T00:00:00Z',
-            team_ids=['1'], dates=[day], completed_weeks=0)['status'], 'rejected')
+        page['rows'][2][2] = '3rd Qtr'   # live game: partial stats count, remainder is listed for projection
+        live = build_actual_state({'pages': [page]}, captured_at_utc='2026-10-22T00:00:00Z',
+                                  team_ids=['1'], dates=[day], completed_weeks=0)
+        self.assertEqual(live['status'], 'captured', live['problems'])
+        self.assertEqual(live['current_week_volumes']['1']['pts'], 26)
+        self.assertEqual([(g['site_id'], g['remaining_fraction']) for g in live['in_progress_games']], [('103', 0.375)])
 
     def test_advisor_hold_tracks_injury_adjusted_forecast(self):
         inputs = load_inputs(ROOT)

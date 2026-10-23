@@ -14,6 +14,7 @@ from fantasy_dashboard.yahoo.evidence import classify_plan, evidence_reasons
 from fantasy_dashboard.yahoo.transactions import (
     SNAPSHOT_NAME,
     build_actual_state,
+    live_remaining_fraction,
     build_snapshot,
     load_transaction_snapshot,
     resolve_evidence,
@@ -145,7 +146,18 @@ class YahooSnapshotTests(unittest.TestCase):
         state = build_actual_state(raw, captured_at_utc=self.captured, team_ids=['1', '2', '3'], dates=['2026-10-20'], completed_weeks=0)
         self.assertEqual(state['status'], 'rejected')
         self.assertIn('page_missing:3/2026-10-20', state['problems'])
-        self.assertIn('game_in_progress:2/2026-10-20/1', state['problems'])
+        self.assertFalse(any(p.startswith('game_in_progress') for p in state['problems']))
+        state = build_actual_state(raw, captured_at_utc=self.captured, team_ids=['1', '2'], dates=['2026-10-20'], completed_weeks=0)
+        self.assertEqual(state['status'], 'captured', state['problems'])   # a live game no longer blocks the capture
+        self.assertEqual(state['current_week_volumes']['2']['pts'], 17)     # partial box score counts as actual
+        self.assertEqual(state['in_progress_games'], [{'team': '2', 'date': '2026-10-20', 'site_id': '1', 'game': 'Q3 4:12',
+                         'remaining_fraction': 0.337, 'clock_parsed': True, 'has_stats': True}])
+
+    def test_live_remaining_fraction(self):
+        for text, share in [('Q3 4:12', 0.337), ('4:12 3rd', 0.337), ('Q1 12:00', 1.0), ('Halftime', 0.5),
+                            ('End Q3', 0.25), ('End of 1st', 0.75), ('OT 2:01', 0.0), ('2OT', 0.0), ('Q4', 0.125)]:
+            self.assertEqual(live_remaining_fraction(text), share, text)
+        self.assertIsNone(live_remaining_fraction('Delayed'))
 
     def test_plan_classes(self):
         self.assertEqual(classify_plan({'steps': []}), 'hold')
